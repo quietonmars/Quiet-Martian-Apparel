@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+{% extends "customer/layout.html" %}
+{% block title %} Signup {% endblock %}
+{% block navbar %}
+    {% include 'customer/base.html' %}
+{% endblock %}
+
+{% block main %}
+
+<html>
+<head>
+<link rel="stylesheet" href="static/style.css">
+	<title>Customer Signup</title>
+</head>
+<body style="background-color: #222f3e; color: whitesmoke">
+<div class="container" style="color: black">
+
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card my-5">
+                <div class="card-header">
+                    <h3 class="text-center">Profile</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+
+                        <div class="form-group">
+                            <label>Name:</label>
+							<label for="name">{{ user.name }}</label><br><br>
+                        </div>
+
+                        <div class="form-group">
+                            <label>NRIC:</label>
+							<label for="nrc">{{ user.nric }}</label><br><br>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nationality:</label>
+							<label for="nationality">{{ user.nationality }}</label><br><br>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phone Number:</label>
+							<label for="phone">{{ user.phone_number }}</label><br><br>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Date of Birth:</label>
+							<label for="dob">{{ dob }}</label><br><br>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email:</label>
+							<label for="email">{{ user.email }}</label><br><br>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Address:</label>
+							<label for="add">{{ user.address }}</label><br><br>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Card Number:</label>
+							<label for="card">{{ user.card_no }}</label><br><br>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Username:</label>
+							<label for="usn">{{ user.username }}</label><br><br>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Password :</label>
+							<label for="pwd">*******</label><br><br>
+                        </div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+</body>
+</html>
+
+
+{% endblock %}
+
+{% block footer %}
+{% include 'customer/footer.html' %}
+{% endblock %}

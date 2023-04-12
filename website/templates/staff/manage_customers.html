@@ -1,0 +1,45 @@
+{% extends "staff/layout.html" %}
+{% block title %} Manage Customer {% endblock %}
+
+{% block navbar %}
+
+{% endblock %}
+    {% include 'staff/base3.html' %}
+
+{% block main %}
+<link rel="stylesheet" href="static/payment.css">
+<h1>Manage Customers</h1>
+<table class="history">
+  <thead>
+    <tr>
+      <th>&nbsp;ID</th>
+      <th>Name</th>
+      <th>NRIC</th>
+      <th>Nationality</th>
+      <th>Phone Number</th>
+      <th>Date of Birth(Y-M-D)</th>
+      <th>Email</th>
+      <th>Address</th>
+      <th>Card No</th>
+      <th>Username</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for customer in customers %}
+    <tr>
+      <td>{{ customer.id }}</td>
+      <td>{{ customer.name }}</td>
+      <td>{{ customer.nric }}</td>
+      <td>{{ customer.nationality }}</td>
+      <td>{{ customer.phone_number }}</td>
+      <td>{{ customer.dob.strftime('%Y-%m-%d') }}</td>
+      <td>{{ customer.email }}</td>
+      <td>{{ customer.address }}</td>
+      <td>{{ customer.card_no }}</td>
+      <td>{{ customer.username }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

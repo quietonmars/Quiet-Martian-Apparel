@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+{% extends "staff/layout.html" %}
+{% block title %} Manage Products {% endblock %}
+
+{% block navbar %}
+
+{% endblock %}
+    {% include 'staff/base2.html' %}
+{% block main %}
+<head>
+<link rel="stylesheet" href="static/style.css">
+<style>
+
+</style>
+</head>
+<body>
+<div class="container">
+    <h3 class="my-4 text-center">Manage Products</h3>
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <h4 for="newproduct">Add New Product</h4>
+
+            <label>Product Name</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Enter Product Name"
+                required>
+
+            <label>Product Description</label>
+            <textarea class="form-control" id="desc" name="desc" placeholder="Enter Product Description" required></textarea>
+
+            <div class="form-group">
+            <label for="stock">Add Product Stock</label>
+            <input type="number" class="form-control" id="stock" name="stock" placeholder="Enter Product Stock"
+                required>
+            </div>
+
+            <label>Product Brand</label>
+            <select class="form-control" id="brand" name="brand" required>
+                <option value="" disabled selected>Select Brands</option>
+                {% for brand in brands %}
+                <option value="{{ brand.id }}">{{ brand.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Product Category</label>
+            <select class="form-control" id="cat" name="cat" required>
+                <option value="" disabled selected>Select Category</option>
+                {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Product Discount</label>
+            <select class="form-control" id="discount" name="discount">
+                <option value="" disabled selected>Select Discount</option>
+                {% for discount in discounts %}
+                <option value="{{ discount.id }}">{{ discount.name }}</option>
+                {% endfor %}
+            </select>
+
+            <div class="form-group">
+            <label for="price">Add Product Price</label>
+            <input type="number" class="form-control" id="price" name="price" placeholder="Enter Product Price"
+                required>
+            </div>
+
+            <label>Product Color</label>
+            {% for color in colors %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="colors[]" id="color{{ color.id }}" value="{{ color.id }}">
+                    <label class="form-check-label" for="color{{ color.id }}">
+                        {{ color.name }}
+                    </label>
+                </div>
+            {% endfor %}
+
+
+
+            <br>
+            <label>Add Images</label>
+            <div class="form-group">
+                    <label for="image1">Image 1</label>
+                    <input class="form-control" id="image1" name="image1" type="file" required>
+            </div>
+
+            <div class="form-group">
+                    <label for="image2">Image 2</label>
+                    <input class="form-control" id="image2" name="image2" type="file" required>
+            </div>
+
+            <div class="form-group">
+                    <label for="image3">Image 3</label>
+                    <input class="form-control" id="image3" name="image3" type="file" required>
+            </div>
+
+
+        </div>
+        <button type="submit" class="btn btn-primary mb-3">Add New Product</button>
+    </form>
+
+    <table class="table table-striped" style="background-color: #c8d6e5">
+        <thead >
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Brand</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Stock</th>
+                <th>Discount</th>
+                <th>Price</th>
+                <th>Color</th>
+                <th>Image 1</th>
+                <th>Image 2</th>
+                <th>Image 3</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>{{ product.title }}</td>
+                <td>{{ product.brand.name }}</td>
+                <td>{{ product.category.name }}</td>
+                <td>{{ product.description }}</td>
+                <td>{{ product.stock }}</td>
+                <td>{{ product.discount_id }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.color.name }}</td>
+                <td><a href="/static/uploads/{{product.image_1}}">{{ product.image_1 }}</a></td>
+                <td><a href="/static/uploads/{{product.image_2}}">{{ product.image_2 }}</a></td>
+                <td><a href="/static/uploads/{{product.image_3}}">{{ product.image_3 }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+{% endblock %}

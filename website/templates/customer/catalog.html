@@ -1,0 +1,44 @@
+{% if products %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <div class="row">
+        {% for product in products %}
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card mb-4">
+                    <a href="/static/uploads/{{product.image_1}}">
+                        <img class="card-img-top w-100 h-100" src="static/uploads/{{product.image_1}}" alt="Product">
+                    </a>
+                    <div class="card-body">
+                        <h5><a class="card-title" href="/product-details/{{product.id}}">{{product.title}}</a></h5>
+                        <h4>${{product.price}}</h4>
+                        <span class="text-warning"></span>
+                    </div>
+                </div>
+            </div>
+            {% if loop.index % 4 == 0 %}</div><div class="row">{% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+    {% if products.has_prev %}
+        <a href="{{ url_for('views.home', page=products.prev_num, q=query) }}">Prev &nbsp;</a>
+    {% endif %}
+
+    {% for num in products.iter_pages() %}
+        {% if num %}
+            {% if num == products.page %}
+                <span class="current">Page {{ num }} of {{ products.pages }}</span>
+            {% endif %}
+        {% else %}
+            <span class="ellipsis">...</span>
+        {% endif %}
+    {% endfor %}
+
+    {% if products.has_next %}
+        <a href="{{ url_for('views.home', page=products.next_num, q=query) }}">&nbsp;Next</a>
+    {% endif %}
+</div>
+
+
+{% else %}
+<label>No Products Found</label>
+{% endif %}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% extends "customer/layout.html" %}
+{% block title %} Login {% endblock %}
+{% block navbar %}
+    {% include 'customer/base.html' %}
+{% endblock %}
+
+{% block main %}
+
+<html>
+<head>
+<link rel="stylesheet" href="static/style.css">
+	<title>Login</title>
+</head>
+<body>
+<div>
+
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card my-5">
+                <div class="card-header">
+                    <h3 class="text-center">Login</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/login">
+						<div class="form-group">
+                            <label for="username">Username:</label>
+							<input type="text" id="username" name="username" required><br><br>
+                        </div>
+
+						<div class="form-group">
+                            <label for="password">Password:</label>
+							<input type="password" id="password" name="password" required><br><br>
+                        </div>
+
+						<div class="form-group mt-4">
+                            <button class="btn btn-primary btn-block rounded" style="border-radius: 0;" type="submit" value="Signup">Login</button>
+                        </div>
+                        <a href="{{ url_for('auth.signup') }}" class="btn btn-outline-primary btn-block rounded">Sign Up</a>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+</body>
+</html>
+
+
+{% endblock %}
+{% block footer %}
+{% include 'customer/footer.html' %}
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "customer/layout.html" %}
+{% block title %} About Us {% endblock %}
+
+{% block navbar %}
+    {% include 'customer/base.html' %}
+{% endblock %}
+
+{% block main %}
+<link rel="stylesheet" href="static/payment.css">
+    <h1>{{ about_us.title }}</h1>
+    <p>{{ about_us.description }}</p>
+
+<div>
+
+<img class="card-img-top w-100 h-100" src="static/uploads/{{ about_us.image.replace(' ', '_') }}" alt="{{ about_us.title }}">
+
+</div>
+{% endblock %}
+
+{% block footer %}
+{% include 'customer/footer.html' %}
+{% endblock %}

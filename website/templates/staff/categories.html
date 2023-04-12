@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% extends "staff/layout.html" %}
+{% block title %} Manage Categories {% endblock %}
+
+{% block navbar %}
+
+{% endblock %}
+    {% include 'staff/base2.html' %}
+{% block main %}
+<head>
+<link rel="stylesheet" href="static/style.css">
+<style>
+
+</style>
+</head>
+<body>
+<div class="container">
+    <h3 class="my-4 text-center">Manage Category</h3>
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="newcat">Add New Category</label>
+            <input type="text" class="form-control" id="newcat" name="newcat" placeholder="Enter Category Name"
+                required>
+        </div>
+        <button type="submit" class="btn btn-primary mb-3">Add New Category</button>
+    </form>
+
+    <table class="table table-striped" style="background-color: #c8d6e5">
+        <thead >
+            <tr>
+                <th>ID</th>
+                <th>Category Name</th>
+                <th>Created Date</th>
+                <th>Created By</th>
+                <th>Updated Date</th>
+                <th>Updated By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td>{{ category.id }}</td>
+                <td>{{ category.name }}</td>
+                <td>{{ category.created_date }}</td>
+                <td>{{ category.created_by }}</td>
+                <td>{{ category.updated_date }}</td>
+                <td>{{ category.updated_by }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+{% endblock %}

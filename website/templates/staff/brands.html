@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% extends "staff/layout.html" %}
+{% block title %} Manage Brands {% endblock %}
+
+{% block navbar %}
+
+{% endblock %}
+    {% include 'staff/base2.html' %}
+{% block main %}
+<head>
+<link rel="stylesheet" href="static/style.css">
+<style>
+
+</style>
+</head>
+<body>
+<div class="container">
+    <h3 class="my-4 text-center">Manage Brands</h3>
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="newbrand">Add New Brand</label>
+            <input type="text" class="form-control" id="newbrand" name="newbrand" placeholder="Enter Brand Name"
+                required>
+        </div>
+        <button type="submit" class="btn btn-primary mb-3">Add New Brand</button>
+    </form>
+
+    <table class="table table-striped" style="background-color: #c8d6e5">
+        <thead >
+            <tr>
+                <th>ID</th>
+                <th>Brand Name</th>
+                <th>Created Date</th>
+                <th>Created By</th>
+                <th>Updated Date</th>
+                <th>Updated By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for brand in brands %}
+            <tr>
+                <td>{{ brand.id }}</td>
+                <td>{{ brand.name }}</td>
+                <td>{{ brand.created_date }}</td>
+                <td>{{ brand.created_by }}</td>
+                <td>{{ brand.updated_date }}</td>
+                <td>{{ brand.updated_by }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+{% endblock %}

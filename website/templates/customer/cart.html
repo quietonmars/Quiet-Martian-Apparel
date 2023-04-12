@@ -1,0 +1,89 @@
+{% extends "customer/layout.html" %}
+{% block title %} Shopping Cart {% endblock %}
+
+{% block navbar %}
+    {% include 'customer/base.html' %}
+{% endblock %}
+
+{% block main %}
+<link rel="stylesheet" href="static/payment.css">
+    <h1>Shopping Cart</h1>
+    {% if orders %}
+        <table class="history">
+            <thead>
+                <tr>
+                    <th>&nbsp;&nbsp;Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Discount</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.product.title }}</td>
+                        <td>{{ order.quantity }}</td>
+                        <td>{{ order.price }} $</td>
+                        <td>{{ order.product.discount.percentage}} % {{order.product.discount.name}}</td>
+                        <td>{{ order.order_total }} $</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4">Total:</td>
+                    <td>{{ total }} $</td>
+                </tr>
+            </tfoot>
+        </table>
+        <form id="checkout-form">
+<br>            <button class="btn btn-primary" id="checkout-button">Checkout</button>
+        </form><br>
+        <form method= "POST" action="{{ url_for('auth.payment') }}" id="payment-form" style="display:none;" class="card-box">
+            <div class="form-group">
+                <label for="payment_method">Payment Method</label>
+                <select class="form-control" id="payment_method" name="payment_method" required>
+                    <option value="credit-card">Credit Card</option>
+                    <option value="debit-card">Debit Card</option>
+                    <option value="paypal">PayPal</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="card_no">Card Number</label>
+                <input type="text" class="form-control" id="card_no" name="card_no" value="{{credit_info}}" placeholder="Enter card number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="expiry">Expiry Date:</label>
+                <input type="date" id="expiry" name="expiry" required><br><br>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit Payment</button>
+        </form>
+        <form action="{{ url_for('auth.clear_cart') }}" method="post">
+        <button type="submit" class="btn btn-danger">Clear Cart</button>
+        </form>
+          <script>
+            var checkoutButton = document.getElementById("checkout-button");
+            var paymentForm = document.getElementById("payment-form");
+            var submitPaymentButton = document.getElementById("submit-payment-button");
+
+            checkoutButton.addEventListener("click", function(event) {
+                event.preventDefault();
+                paymentForm.style.display = "block";
+            });
+
+            submitPaymentButton.addEventListener("click", function(event) {
+                // Add your form validation and submission code here
+            });
+        </script>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+{% endblock %}
+
+{% block footer %}
+    {% include 'customer/footer.html' %}
+{% endblock %}

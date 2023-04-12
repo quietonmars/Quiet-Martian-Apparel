@@ -1,0 +1,66 @@
+{% extends "staff/layout.html" %}
+{% block title %} Manage Staff {% endblock %}
+
+{% block navbar %}
+
+{% endblock %}
+    {% include 'staff/base3.html' %}
+
+{% block main %}
+<h1>Manage Staffs</h1>
+<link rel="stylesheet" href="static/payment.css">
+<table class="history">
+  <thead>
+    <tr>
+      <th>&nbsp;ID</th>
+      <th>Name</th>
+      <th>NRIC</th>
+      <th>Phone Number</th>
+      <th>Date of Birth(Y-M-D)</th>
+      <th>Email</th>
+      <th>Address</th>
+      <th>Status</th>
+      <th>Type</th>
+      <th>Username</th>
+      <th></th>
+
+    </tr>
+  </thead>
+  <tbody>
+    {% for staff in staffs %}
+    <tr>
+      <td>{{ staff.id }}</td>
+      <td>{{ staff.name }}</td>
+      <td>{{ staff.nric }}</td>
+      <td>{{ staff.phone_number }}</td>
+      <td>{{ staff.dob.strftime('%Y-%m-%d') }}</td>
+      <td>{{ staff.email }}</td>
+      <td>{{ staff.address }}</td>
+      <td>
+        {% if staff.status == 'pending' %}
+          <a href="{{ url_for('auth.approve_reject_staff', id=staff.id, status='activated') }}" class="btn btn-sm btn-primary">Approve</a>
+          <a href="{{ url_for('auth.approve_reject_staff', id=staff.id, status='rejected') }}" class="btn btn-sm btn-warning">Reject</a>
+        {% else %}
+          {{ staff.status }}
+        {% endif %}
+      </td>
+      <td>{{ staff.type }}</td>
+      <td>{{ staff.username }}</td>
+      <td>
+        {% if staff.status == 'activated' %}
+        <a href="{{ url_for('auth.approve_reject_staff', id=staff.id, status='deactivated') }}" class="btn btn-sm btn-primary">Deactivate Account</a>
+        {% elif staff.status== 'deactivated' %}
+        <a href="{{ url_for('auth.approve_reject_staff', id=staff.id, status='activated') }}" class="btn btn-sm btn-primary">Activate Account</a>
+        {% elif staff.status== 'rejected' %}
+        Rejected
+        {% else %}
+        Pending Approval
+        {% endif %}
+      </td>
+
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

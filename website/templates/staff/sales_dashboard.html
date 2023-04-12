@@ -1,0 +1,38 @@
+{% extends "staff/layout.html" %}
+{% block title %} Dashboard {% endblock %}
+
+{% block navbar %}
+
+{% endblock %}
+    {% include 'staff/base2.html' %}
+
+{% block main %}
+<link rel="stylesheet" href="static/payment.css">
+    <h1>Most Sold</h1>
+        <table class="history">
+            <thead>
+                <tr>
+                    <th>Most Sold</th>
+                    <th>Number of Orders</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr>
+                        <td>Most Sold Category: {{ msc }}</td>
+                        <td>{{ count_c }}</td>
+
+                    </tr>
+
+<!--                    <tr>-->
+<!--                        <td>Most Sold Color: {{ most_sold_color }}</td>-->
+<!--                        <td>{{ cc }}</td>-->
+<!--                    </tr>-->
+
+                    <tr>
+                        <td>Most Sold Brand: {{ msb }}</td>
+                        <td>{{ count_b }}</td>
+                    </tr>
+
+            </tbody>
+        </table>
+{% endblock %}

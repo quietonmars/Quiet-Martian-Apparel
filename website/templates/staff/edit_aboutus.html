@@ -1,0 +1,26 @@
+{% extends "staff/layout.html" %}
+{% block title %} Edit About Us {% endblock %}
+{% block navbar %}
+
+{% endblock %}
+{% include 'staff/base3.html' %}
+
+{% block main %}
+<link rel="stylesheet" href="static/payment.css">
+<h2>Edit About Us Page</h2>
+<form method="post" enctype="multipart/form-data">
+  <div class="form-group">
+    <label for="title">Title:</label>
+    <input type="text" class="form-control" id="title" name="title" value="{{ about_us.title }}">
+  </div>
+  <div class="form-group">
+    <label for="description">Description:</label>
+    <textarea class="form-control" id="description" name="description">{{ about_us.description }}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="image">Image:</label>
+    <input type="file" class="form-control-file" id="image" name="image">
+  </div>
+  <button type="submit" class="btn btn-primary">Save</button>
+</form>
+{% endblock %}

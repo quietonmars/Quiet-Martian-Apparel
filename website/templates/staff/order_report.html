@@ -1,0 +1,37 @@
+{% extends "staff/layout.html" %}
+{% block title %} Order Report {% endblock %}
+
+{% block navbar %}
+
+{% endblock %}
+    {% include 'staff/base2.html' %}
+{% block main %}
+<link rel="stylesheet" href="static/payment.css">
+    <h1>Order Report</h1>
+        <table class="history">
+            <thead>
+                <tr>
+                    <th>&nbsp;&nbsp;Product Name</th>
+                    <th>Customer Name</th>
+                    <th>Shipping Address</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.product.title }}</td>
+                        <td>{{ order.customer.name }}</td>
+                        <td>{{ order.customer.address }}</td>
+                        <td>{{ order.quantity }}</td>
+                        <td>{{ order.price }} $</td>
+                        <td>{{ order.order_total }} $</td>
+                        <td>{{ order.order_status }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+{% endblock %}

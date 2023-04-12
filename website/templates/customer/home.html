@@ -1,0 +1,39 @@
+{% extends "customer/layout.html" %}
+{% block title %} Home Page {% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+{% endblock %}
+
+{% block navbar %}
+    {% include 'customer/base.html' %}
+{% endblock %}
+
+{% block main %}
+    {% include 'customer/carousel.html' %}
+
+    <form action="{{ url_for('views.home') }}" method="GET" class="w-100 m-0" style="padding-right: 3%;" id="search-form">
+        <div class="input-group-append rounded-left">
+            <input type="search" class="form-control rounded-left form-control-md" autocomplete="off" style="float: left; border-radius: 0; width: 100%;" name="q" placeholder="What would you like...">
+            <button class="btn btn-success btn-md rounded-right" style="border-radius: 0;" type="submit" onclick="scrollToCatalog()">Search</button>
+        </div>
+    </form>
+    <br>
+    {%if query %}
+    <div><label>Showing Results for: {{ query }}</label></div>
+    {% endif %}
+    {% include 'customer/catalog.html' %}
+{% endblock %}
+
+{% block footer %}
+    {% include 'customer/footer.html' %}
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function scrollToCatalog() {
+            document.querySelector('#catalog').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+{% endblock %}

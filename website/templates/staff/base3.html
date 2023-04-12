@@ -1,0 +1,41 @@
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm fixed-top">
+    <a class="navbar-brand" href="/staff-login">Quiet Martian Apparel Administration</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+            aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+
+        <ul class="navbar-nav ml-auto">
+            {% if user.is_authenticated %}
+            <li class="nav-item"><a href="/manage-customers" class="nav-link">Manage Customers</a></li>
+            <li class="nav-item"><a href="/manage-staffs" class="nav-link">Manage Staffs</a></li>
+            <li class="nav-item"><a href="/about_us/edit" class="nav-link">Edit About Us</a></li>
+            <li class="nav-item"><a href="/admin-logout" class="nav-link">Logout</a></li>
+            {% else %}
+            <li class="nav-item"><a href="/new-staff" class="nav-link">Register</a></li>
+            <li class="nav-item"><a href="/staff-login" class="btn btn-outline-info">Login</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    {% if category == 'error' %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% else %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %} {% endfor %} {% endif %} {% endwith %}

@@ -1,0 +1,51 @@
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="date"],
+ select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  border: none;
+  border-bottom: 2px solid #ff6347;
+}
+
+.card-img-top {
+   height: 200px; /* set a fixed height for the card images */
+   width: 200px;
+   object-fit: cover; /* resize the images to cover the entire container */
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  border: none;
+  border-bottom: 2px solid #ff6347;
+}
+
+
+input[type="submit"],
+input[type="button"] {
+  width: 49%;
+  padding: 10px;
+  margin-top: 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background-color: #ff6347;
+  color: #fff;
+  cursor: pointer;
+}
+
+input[type="submit"] {
+  float: left;
+}
+
+input[type="button"] {
+  float: right;
+  background-color: #888;
+}

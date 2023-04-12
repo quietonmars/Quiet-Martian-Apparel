@@ -1,0 +1,47 @@
+{% extends "customer/layout.html" %}
+{% block title %} Shopping Cart {% endblock %}
+
+{% block navbar %}
+    {% include 'customer/base.html' %}
+{% endblock %}
+
+{% block main %}
+<link rel="stylesheet" href="static/payment.css">
+    <h1>Order History</h1>
+    {% if orders %}
+        <table class="history">
+            <thead>
+                <tr>
+                    <th>&nbsp;&nbsp;Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.product.title }}</td>
+                        <td>{{ order.quantity }}</td>
+                        <td>{{ order.price }} $</td>
+                        <td>{{ order.order_status }}</td>
+                        <td>{{ order.order_total }} $</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4">Total:</td>
+                    <td>{{ total }} $</td>
+                </tr>
+            </tfoot>
+        </table>
+    {% else %}
+        <p>Your Order History is empty.</p>
+    {% endif %}
+{% endblock %}
+
+{% block footer %}
+    {% include 'customer/footer.html' %}
+{% endblock %}

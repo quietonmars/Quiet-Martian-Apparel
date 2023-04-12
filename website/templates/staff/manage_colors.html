@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+{% extends "staff/layout.html" %}
+{% block title %} Manage Colors {% endblock %}
+
+{% block navbar %}
+
+{% endblock %}
+    {% include 'staff/base2.html' %}
+{% block main %}
+<head>
+<link rel="stylesheet" href="static/style.css">
+<style>
+
+</style>
+</head>
+<body>
+<div class="container">
+    <h3 class="my-4 text-center">Manage Colors</h3>
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="newcolor">Add New Color</label>
+            <input type="text" class="form-control" id="newcolor" name="newcolor" placeholder="Enter Color Name"
+                required>
+        </div>
+        <div class="form-group">
+            <label for="newcolor">Add Color Code</label>
+            <input type="text" class="form-control" id="color_code" name="color_code" placeholder="Enter Color Code"
+                required>
+        </div>
+        <button type="submit" class="btn btn-primary mb-3">Add New Color</button>
+    </form>
+
+    <table class="table table-striped" style="background-color: #c8d6e5">
+        <thead >
+            <tr>
+                <th>ID</th>
+                <th>Color Name</th>
+                <th>Color Code</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for color in colors %}
+            <tr>
+                <td>{{ color.id }}</td>
+                <td>{{ color.name }}</td>
+                <td>{{ color.color_code }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+{% endblock %}
