@@ -25,7 +25,17 @@
                         <td>{{ order.product.title }}</td>
                         <td>{{ order.quantity }}</td>
                         <td>{{ order.price }} $</td>
-                        <td>{{ order.product.discount.percentage}} % {{order.product.discount.name}}</td>
+                        <td>
+                            {% if order.product.discount %}
+                                {% if order.product.discount.end_date < datetime.now() %}
+                                No Discount
+                                {% else %}
+                                {{ order.product.discount.percentage}} % {{order.product.discount.name}}
+                                {% endif %}
+                            {% else %}
+                            No Discount
+                            {% endif %}
+                        </td>
                         <td>{{ order.order_total }} $</td>
                     </tr>
                 {% endfor %}

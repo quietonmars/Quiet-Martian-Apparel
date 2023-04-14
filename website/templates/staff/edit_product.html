@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+{% extends "staff/layout.html" %}
+{% block title %} Edit Product {% endblock %}
+
+{% block navbar %}
+
+{% endblock %}
+
+{% include 'staff/base2.html' %}
+
+{% block main %}
+<head>
+    <link rel="stylesheet" href="static/style.css">
+    <style>
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3 class="my-4 text-center">Edit Product</h3>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ product.title }}"
+                    required>
+            </div>
+            <div class="form-group">
+                <label>Product Description</label>
+                <textarea class="form-control" id="desc" name="desc"
+                    required>{{ product.description }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Product Stock</label>
+                <input type="number" class="form-control" id="stock" name="stock" value="{{ product.stock }}"
+                    required>
+            </div>
+            <div class="form-group">
+                <label>Product Brand</label>
+                <select class="form-control" id="brand" name="brand" required>
+                    {% for brand in brands %}
+                    <option value="{{ brand.id }}" {% if brand.id == product.brand.id %}selected{% endif %}>
+                        {{ brand.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Product Category</label>
+                <select class="form-control" id="cat" name="cat" required>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" {% if category.id == product.category.id %}selected{% endif %}>
+                        {{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Product Discount</label>
+                <select class="form-control" id="discount" name="discount">
+                    <option value="" {% if product.discount is none %}selected{% endif %}>No Discount</option>
+                    {% for discount in discounts %}
+                        {% if discount.start_date <= datetime.now() <= discount.end_date %}
+                            <option value="{{ discount.id }}" {% if discount.id == product.discount_id %}selected{% endif %}>
+                                {{ discount.name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Product Price</label>
+                <input type="number" class="form-control" id="price" name="price" value="{{ product.price }}"
+                    required>
+            </div>
+            <div class="form-group">
+                <label>Product Color</label>
+                {% for color in colors %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="colors[]" id="color{{ color.id }}" value="{{ color.id }}"
+                            {% if color in product.colors %}checked{% endif %}>
+                        <label class="form-check-label" for="color{{ color.id }}">
+                            {{ color.name }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary mb-3">Save Changes</button>
+        </form>
+    </div>
+</body>
+{% endblock %}

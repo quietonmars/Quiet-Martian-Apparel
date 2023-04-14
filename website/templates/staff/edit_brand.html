@@ -14,17 +14,14 @@
 </style>
 </head>
 <body>
-<div class="container">
-    <h3 class="my-4 text-center">Manage Brands</h3>
-
-    <form method="POST">
-        <div class="form-group">
-            <label for="newbrand">Add New Brand</label>
-            <input type="text" class="form-control" id="newbrand" name="newbrand" placeholder="Enter Brand Name"
-                required>
-        </div>
-        <button type="submit" class="btn btn-primary mb-3">Add New Brand</button>
-    </form>
+<form method="POST">
+     <h3 class="my-4 text-center">Manage Brands</h3>
+    <div class="form-group">
+        <label for="brand_name">Brand Name</label>
+        <input type="text" class="form-control" id="brand_name" name="brand_name" value="{{ brand.name }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary mb-3">Save Changes</button>
+</form>
 
     <table class="table table-striped" style="background-color: #c8d6e5">
         <thead >
@@ -36,13 +33,12 @@
                 <th>Created By</th>
                 <th>Updated Date</th>
                 <th>Updated By</th>
-
             </tr>
         </thead>
         <tbody>
             {% for brand in brands %}
             <tr>
-                <td><a href="{{ url_for('auth.edit_brand', brand_id=brand.id) }}">Edit</a></td>
+                <td>Edit</td>
                 <td>{{ brand.id }}</td>
                 <td>{{ brand.name }}</td>
                 <td>{{ brand.created_date }}</td>
@@ -54,6 +50,5 @@
             {% endfor %}
         </tbody>
     </table>
-</div>
 </body>
 {% endblock %}

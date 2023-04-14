@@ -13,6 +13,7 @@
                 <tr>
                     <th>&nbsp;&nbsp;Product Name</th>
                     <th>Customer Name</th>
+                    <th>Product Color</th>
                     <th>Shipping Address</th>
                     <th>Quantity</th>
                     <th>Price</th>
@@ -25,6 +26,7 @@
                     <tr>
                         <td>{{ order.product.title }}</td>
                         <td>{{ order.customer.name }}</td>
+                        <td>{{ order.color}}</td>
                         <td>{{ order.customer.address }}</td>
                         <td>{{ order.quantity }}</td>
                         <td>{{ order.price }} $</td>

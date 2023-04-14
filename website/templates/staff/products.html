@@ -17,10 +17,66 @@
 <div class="container">
     <h3 class="my-4 text-center">Manage Products</h3>
 
-    <form method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-            <h4 for="newproduct">Add New Product</h4>
+    <table class="table table-striped" style="background-color: #c8d6e5">
+        <thead>
+            <tr>
+                <th>Edit</th>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Brand</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Stock</th>
+                <th>Discount</th>
+                <th>Price</th>
+                <th>Color</th>
+                <th>Image 1</th>
+                <th>Image 2</th>
+                <th>Image 3</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td><a href="{{ url_for('auth.edit_product', product_id=product.id) }}">Edit</a></td>
+                <td>{{ product.id }}</td>
+                <td>{{ product.title }}</td>
+                <td>{{ product.brand.name }}</td>
+                <td>{{ product.category.name }}</td>
+                <td>{{ product.description }}</td>
+                <td>{{ product.stock }}</td>
+                <td>{{ product.discount_id }}</td>
+                <td>{{ product.price }}</td>
+                <td>
+                    {% for color in product.colors %}
+                    {{ color.name }}
+                    {% endfor %}
+                </td>
+                <td>
+                  <a href="/static/uploads/{{product.image_1}}">
+                    <img src="/static/uploads/{{product.image_1}}" alt="Product Image" class="img-thumbnail" style="max-width: 70px; max-height: 70px;">
+                  </a>
+                </td>
+                <td>
+                  <a href="/static/uploads/{{product.image_2}}">
+                    <img src="/static/uploads/{{product.image_2}}" alt="Product Image" class="img-thumbnail" style="max-width: 70px; max-height: 70px;">
+                  </a>
+                </td>
+                <td>
+                  <a href="/static/uploads/{{product.image_3}}">
+                    <img src="/static/uploads/{{product.image_3}}" alt="Product Image" class="img-thumbnail" style="max-width: 70px; max-height: 70px;">
+                  </a>
+                </td>
 
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group" id="newproduct">
+            <h4><a href="#newproduct"><strong><u>Add New Product</u></strong></a></h4>
+            <br>
             <label>Product Name</label>
             <input type="text" class="form-control" id="name" name="name" placeholder="Enter Product Name"
                 required>
@@ -54,7 +110,9 @@
             <select class="form-control" id="discount" name="discount">
                 <option value="" disabled selected>Select Discount</option>
                 {% for discount in discounts %}
-                <option value="{{ discount.id }}">{{ discount.name }}</option>
+                    {% if discount.start_date <= datetime.now() <= discount.end_date %}
+                        <option value="{{ discount.id }}">{{ discount.name }}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
 
@@ -78,6 +136,9 @@
 
             <br>
             <label>Add Images</label>
+            <p style="color:red">
+             <strong><u>Please upload 800 x 800 dimensions for best results</u></strong>
+            </p>
             <div class="form-group">
                     <label for="image1">Image 1</label>
                     <input class="form-control" id="image1" name="image1" type="file" required>
@@ -98,42 +159,6 @@
         <button type="submit" class="btn btn-primary mb-3">Add New Product</button>
     </form>
 
-    <table class="table table-striped" style="background-color: #c8d6e5">
-        <thead >
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Brand</th>
-                <th>Category</th>
-                <th>Description</th>
-                <th>Stock</th>
-                <th>Discount</th>
-                <th>Price</th>
-                <th>Color</th>
-                <th>Image 1</th>
-                <th>Image 2</th>
-                <th>Image 3</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in products %}
-            <tr>
-                <td>{{ product.id }}</td>
-                <td>{{ product.title }}</td>
-                <td>{{ product.brand.name }}</td>
-                <td>{{ product.category.name }}</td>
-                <td>{{ product.description }}</td>
-                <td>{{ product.stock }}</td>
-                <td>{{ product.discount_id }}</td>
-                <td>{{ product.price }}</td>
-                <td>{{ product.color.name }}</td>
-                <td><a href="/static/uploads/{{product.image_1}}">{{ product.image_1 }}</a></td>
-                <td><a href="/static/uploads/{{product.image_2}}">{{ product.image_2 }}</a></td>
-                <td><a href="/static/uploads/{{product.image_3}}">{{ product.image_3 }}</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </div>
 </body>
 {% endblock %}

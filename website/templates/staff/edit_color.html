@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 {% extends "staff/layout.html" %}
-{% block title %} Manage Colors {% endblock %}
+{% block title %} Edit Color {% endblock %}
 
 {% block navbar %}
 
 {% endblock %}
-    {% include 'staff/base2.html' %}
+{% include 'staff/base2.html' %}
 {% block main %}
 <head>
 <link rel="stylesheet" href="static/style.css">
@@ -15,23 +15,20 @@
 </head>
 <body>
 <div class="container">
-    <h3 class="my-4 text-center">Manage Colors</h3>
+    <h3 class="my-4 text-center">Edit Color</h3>
 
     <form method="POST">
         <div class="form-group">
-            <label for="newcolor">Add New Color</label>
-            <input type="text" class="form-control" id="newcolor" name="newcolor" placeholder="Enter Color Name"
-                required>
+            <label for="name">Color Name</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Enter Color Name" value="{{ color.name }}" required>
         </div>
         <div class="form-group">
-            <label for="newcolor">Add Color Code</label>
-            <input type="text" class="form-control" id="color_code" name="color_code" placeholder="Enter Color Code"
-                required>
+            <label for="color_code">Color Code</label>
+            <input type="text" class="form-control" id="color_code" name="color_code" placeholder="Enter Color Code" value="{{ color.color_code }}" required>
         </div>
-        <button type="submit" class="btn btn-primary mb-3">Add New Color</button>
+        <button type="submit" class="btn btn-primary mb-3">Save Changes</button>
     </form>
-
-    <table class="table table-striped" style="background-color: #c8d6e5">
+<table class="table table-striped" style="background-color: #c8d6e5">
         <thead >
             <tr>
                 <th>Edit</th>
@@ -43,7 +40,7 @@
         <tbody>
             {% for color in colors %}
             <tr>
-                <td><a href="{{ url_for('auth.edit_colors', color_id=color.id) }}">Edit</a></td>
+                <td>Edit</td>
                 <td>{{ color.id }}</td>
                 <td>{{ color.name }}</td>
                 <td>{{ color.color_code }}</td>

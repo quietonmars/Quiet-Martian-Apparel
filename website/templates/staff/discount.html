@@ -16,9 +16,46 @@
 <body>
 <div class="container">
     <h3 class="my-4 text-center">Manage Discount</h3>
+<table class="table table-striped" style="background-color: #c8d6e5">
+        <thead >
+            <tr>
+                <th>Edit</th>
+                <th>ID</th>
+                <th>Discount Name</th>
+                <th>Discount Code</th>
+                <th>Discount Percentage</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Created Date</th>
+                <th>Created By</th>
+                <th>Updated Date</th>
+                <th>Updated By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for discount in discounts %}
+            <tr>
+                <td><a href="{{ url_for('auth.edit_discount', discount_id=discount.id) }}">Edit</a></td>
+                <td>{{ discount.id }}</td>
+                <td>{{ discount.name }}</td>
+                <td>{{ discount.discount_code }}</td>
+                <td>{{ discount.percentage }}</td>
+                <td>{{ discount.start_date }}</td>
+                <td>{{ discount.end_date }}</td>
+                <td>{{ discount.created_date }}</td>
+                <td>{{ discount.created_by }}</td>
+                <td>{{ discount.updated_date }}</td>
+                <td>{{ discount.updated_by }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
 
     <form method="POST">
-        <div class="form-group">
+        <div class="form-group" id="newdiscount">
+            <h4><a href="#newdiscount"><strong><u>Add Discount Name</u></strong></a></h4>
+            <br>
             <label for="name">Add New Discount</label>
             <input type="text" class="form-control" id="name" name="name" placeholder="Enter Discount Name"
                 required>
@@ -52,38 +89,7 @@
         <button type="submit" class="btn btn-primary mb-3">Add New Discount</button>
     </form>
 
-    <table class="table table-striped" style="background-color: #c8d6e5">
-        <thead >
-            <tr>
-                <th>ID</th>
-                <th>Discount Name</th>
-                <th>Discount Code</th>
-                <th>Discount Percentage</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Created Date</th>
-                <th>Created By</th>
-                <th>Updated Date</th>
-                <th>Updated By</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for discount in discounts %}
-            <tr>
-                <td>{{ discount.id }}</td>
-                <td>{{ discount.name }}</td>
-                <td>{{ discount.discount_code }}</td>
-                <td>{{ discount.percentage }}</td>
-                <td>{{ discount.start_date }}</td>
-                <td>{{ discount.end_date }}</td>
-                <td>{{ discount.created_date }}</td>
-                <td>{{ discount.created_by }}</td>
-                <td>{{ discount.updated_date }}</td>
-                <td>{{ discount.updated_by }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
 </div>
 </body>
 {% endblock %}

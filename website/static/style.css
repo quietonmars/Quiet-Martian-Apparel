@@ -1,3 +1,6 @@
+html {
+  scroll-behavior: smooth;
+}
 
 input[type="text"],
 input[type="password"],

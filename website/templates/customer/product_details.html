@@ -43,12 +43,16 @@
         <div class="col-lg-7">
             <h2>{{ product.title }}</h2>
             {% if price != product.price %}
+                {% if product.discount.end_date < datetime.now() %}
+                <h4>${{ product.price }}</h4>
+                {% else %}
                 <h4>
                   <del style="color: darkgray;">${{ product.price }}</del>
                   {% if price %}
                     <span style="color: red;">NOW ONLY ${{ price }}</span>
                   {% endif %}
                 </h4>
+                {% endif %}
 
             {% else %}
                 <h4>${{ product.price }}</h4>
@@ -59,9 +63,15 @@
             {% if product.discount_id == 0 %}
 
             {% else %}
-            <p style="color:blue">
-                <strong><u>{{ product.discount.percentage|default('')|int }} % discount</u></strong>
-            </p>
+                {% if product.discount.end_date < datetime.now() %}
+                <p style="color:red">
+                    <strong><u>{{ product.discount.name|default('') }} has expired</u></strong>
+                </p>
+                {% else %}
+                <p style="color:blue">
+                    <strong><u>{{ product.discount.percentage|default('')|int }} % discount</u></strong>
+                </p>
+                {% endif %}
             {% endif %}
 
             <form method="post" action="{{ url_for('auth.add_to_cart') }}">

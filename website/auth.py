@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 
 import sqlite3
 from . import db
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import os
 from sqlalchemy import create_engine, text, desc, func
 from collections import Counter, defaultdict
@@ -151,7 +151,7 @@ def product_details(id):
 
         return redirect(url_for('auth.cart'))
 
-    return render_template("customer/product_details.html", product=product, price=price, colors=colors, user=current_user)
+    return render_template("customer/product_details.html", datetime=datetime, product=product, price=price, colors=colors, user=current_user)
 
 
 @auth.route('/add-to-cart', methods=['POST'])
@@ -169,7 +169,7 @@ def add_to_cart():
     # Reduce the stock by the quantity specified in the order
     product.stock -= quantity
 
-    if product.discount:
+    if product.discount and product.discount.start_date.date() <= date.today() <= product.discount.end_date.date():
         discount_percentage = product.discount.percentage
         discount_price = price * (100 - discount_percentage) / 100
         price = discount_price
@@ -206,7 +206,7 @@ def cart():
     else:
         credit_info = ""
 
-    return render_template("customer/cart.html", credit_info=credit_info, orders=orders, total=total, user=current_user)
+    return render_template("customer/cart.html", datetime=datetime, credit_info=credit_info, orders=orders, total=total, user=current_user)
 
 
 @auth.route('/clear_cart', methods=['POST'])
@@ -433,9 +433,10 @@ def sales_dashboard():
         for color_name, order_count in color_order_count.items():
             print(f"{color_name}: {order_count}")
 
-        cc = (f"{color_name}: {order_count}")
+        cc = (f"{order_count}")
+    almost_out_of_stock = Product.query.filter(Product.stock < 5).all()
 
-    return render_template("staff/sales_dashboard.html", cc=cc,msc=msc, count_b=count_b, count_c=count_c, msb=msb, most_sold_color=most_sold_color, orders=orders, user=current_user)
+    return render_template("staff/sales_dashboard.html", cc=cc,msc=msc, count_b=count_b, count_c=count_c, msb=msb, most_sold_color=most_sold_color, orders=orders, user=current_user, almost_out_of_stock=almost_out_of_stock)
 
 
 @auth.route('/order-report', methods=['GET', 'POST'])
@@ -543,7 +544,44 @@ def manage_products():
 
         return redirect(url_for('auth.manage_products'))
 
-    return render_template("staff/products.html", categories=categories, brands=brands, colors=colors, discounts=discounts, products=products, user=current_user)
+    return render_template("staff/products.html", datetime=datetime, categories=categories, brands=brands, colors=colors, discounts=discounts, products=products, user=current_user)
+
+
+@auth.route('/manage-products/edit/<int:product_id>', methods=['GET', 'POST'])
+@login_required
+def edit_product(product_id):
+    product = Product.query.get(product_id)
+    b = Brand.query.all()
+    brands = b
+
+    if request.method == 'POST':
+        product.title = request.form['name']
+        product.description = request.form['desc']
+        product.stock = request.form['stock']
+        product.stock = request.form['brand']
+        product.category_id = request.form['cat']
+        product.discount_id = request.form['discount']
+        product.price = request.form['price']
+        colors = request.form.getlist('colors[]')
+        colors_str = ','.join(colors)
+        product.color_id = colors_str
+        for color_id in colors:
+            new_color = product_color.insert().values(
+                product_id=product_id,
+                color_id=color_id
+            )
+            db.session.execute(new_color)
+            db.session.commit()
+        db.session.commit()
+
+        flash('Product updated successfully', 'success')
+        return redirect(url_for('auth.manage_products'))
+
+    categories = Category.query.all()
+    colors = Color.query.all()
+    discounts = Discount.query.all()
+
+    return render_template("staff/edit_product.html",datetime=datetime, brands=brands, product=product, categories=categories, colors=colors, discounts=discounts, user=current_user)
 
 
 @auth.route('/manage-brands', methods=['GET', 'POST'])
@@ -561,20 +599,53 @@ def manage_brands():
     return render_template("staff/brands.html",brands=brands, user=current_user)
 
 
+@auth.route('/manage-brands/edit/<int:brand_id>', methods=['GET', 'POST'])
+@login_required
+def edit_brand(brand_id):
+    bran = Brand.query.all()
+    brands = bran
+    brand = Brand.query.get(brand_id)
+    if request.method == 'POST':
+        brand.name = request.form['brand_name']
+        brand.updated_by = current_user.name
+        brand.updated_date = datetime.utcnow()
+        db.session.commit()
+        flash('Brand updated successfully', category='success')
+        return redirect(url_for('auth.manage_brands'))
+    return render_template('staff/edit_brand.html', brands=brands, brand=brand, user=current_user)
+
+
 @auth.route('/manage-category', methods=['GET', 'POST'])
 @login_required
 def manage_category():
-    cat = Category.query.all()
-    categories = cat
+    categories = Category.query.all()
+
     if request.method == 'POST':
         Category_name = request.form.get('newcat')
         new_category = Category(name=Category_name,created_by=current_user.name, updated_by=current_user.name)
         db.session.add(new_category)
         db.session.commit()
         flash('New Category Added Successfully', category='success')
+
         return redirect(url_for('auth.manage_category', user=current_user))
 
     return render_template("staff/categories.html", categories=categories, user=current_user)
+
+
+@auth.route('/edit-category/<int:category_id>/<category_name>', methods=['GET', 'POST'])
+@login_required
+def edit_category(category_id, category_name):
+    category = Category.query.get(category_id)
+    categories = Category.query.all()
+    if request.method == 'POST':
+        category.name = request.form.get('newcat')
+        category.updated_by = current_user.name
+        category.updated_date = datetime.now()
+        db.session.commit()
+        flash('Category Updated Successfully', category='success')
+        return redirect(url_for('auth.manage_category', user=current_user))
+
+    return render_template("staff/edit_category.html", categories=categories, category=category, category_name=category.name, user=current_user)
 
 
 @auth.route('/manage-colors', methods=['GET', 'POST'])
@@ -593,6 +664,22 @@ def manage_colors():
         return redirect(url_for('auth.manage_colors', user=current_user))
 
     return render_template("staff/manage_colors.html", colors= colors, user=current_user)
+
+
+@auth.route('/edit-colors/<int:color_id>', methods=['GET', 'POST'])
+@login_required
+def edit_colors(color_id):
+    color = Color.query.get(color_id)
+    co = Color.query.all()
+    colors = co
+    if request.method == 'POST':
+        color.name = request.form.get('name')
+        color.color_code = request.form.get('color_code')
+        db.session.commit()
+        flash('Color Updated Successfully', category='success')
+        return redirect(url_for('auth.manage_colors', user=current_user))
+
+    return render_template("staff/edit_color.html", color=color, colors= colors, user=current_user)
 
 
 @auth.route('/manage-discount', methods=['GET', 'POST'])
@@ -617,6 +704,26 @@ def manage_discount():
         return redirect(url_for('auth.manage_discount', user=current_user))
 
     return render_template("staff/discount.html", discounts=discounts,user=current_user)
+
+
+@auth.route('/manage-discount/edit/<int:discount_id>', methods=['GET', 'POST'])
+@login_required
+def edit_discount(discount_id):
+    discount = Discount.query.get(discount_id)
+    d = Discount.query.all()
+    discounts = d
+    if request.method == 'POST':
+        discount.name = request.form['name']
+        discount.discount_code = request.form['code']
+        discount.percentage = request.form['percentage']
+        discount.start_date = datetime.strptime(request.form['start_date'], '%Y-%m-%d').date()
+        discount.end_date = datetime.strptime(request.form['end_date'], '%Y-%m-%d').date()
+        discount.updated_by = current_user.name
+        db.session.commit()
+        flash('Discount updated successfully', category='success')
+        return redirect(url_for('auth.manage_discount'))
+
+    return render_template('staff/edit_discount.html', discount=discount, discounts=discounts, user=current_user)
 
 
 # ADMIN STAFF

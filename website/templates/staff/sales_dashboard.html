@@ -8,11 +8,11 @@
 
 {% block main %}
 <link rel="stylesheet" href="static/payment.css">
-    <h1>Most Sold</h1>
+    <h1 style="color:green">Most Sold</h1>
         <table class="history">
             <thead>
                 <tr>
-                    <th>Most Sold</th>
+                    <th>&nbsp;Most Sold</th>
                     <th>Number of Orders</th>
                 </tr>
             </thead>
@@ -23,10 +23,10 @@
 
                     </tr>
 
-<!--                    <tr>-->
-<!--                        <td>Most Sold Color: {{ most_sold_color }}</td>-->
-<!--                        <td>{{ cc }}</td>-->
-<!--                    </tr>-->
+                    <tr>
+                        <td>Most Sold Color: {{ most_sold_color }}</td>
+                        <td>{{ most_sold_color }}: {{ cc }}</td>
+                    </tr>
 
                     <tr>
                         <td>Most Sold Brand: {{ msb }}</td>
@@ -35,4 +35,23 @@
 
             </tbody>
         </table>
+<br> <br>
+<h1 style="color:orange">Almost Out of Stock</h1>
+<table class="history">
+    <thead>
+        <tr>
+            <th>&nbsp;Product</th>
+            <th>Stock</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in almost_out_of_stock %}
+        <tr>
+            <td>{{ product.title }}</td>
+            <td>{{ product.stock }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 {% endblock %}

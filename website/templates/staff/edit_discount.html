@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+{% extends "staff/layout.html" %}
+{% block title %} Edit Discount {% endblock %}
+
+{% block navbar %}
+
+{% endblock %}
+
+{% include 'staff/base2.html' %}
+
+{% block main %}
+<div class="container">
+    <h3 class="my-4 text-center">Edit Discount</h3>
+    <form method="POST">
+        <div class="form-group">
+            <label for="name">Discount Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ discount.name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="code">Discount Code</label>
+            <input type="text" class="form-control" id="code" name="code" value="{{ discount.discount_code }}" required>
+        </div>
+        <div class="form-group">
+            <label for="percentage">Discount Percentage</label>
+            <input type="number" class="form-control" id="percentage" name="percentage" value="{{ discount.percentage }}" required>
+        </div>
+        <div class="form-group">
+            <label for="start_date">Discount Start Date</label>
+            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ discount.start_date.strftime('%Y-%m-%d') }}" required>
+        </div>
+        <div class="form-group">
+            <label for="end_date">Discount End Date</label>
+            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ discount.end_date.strftime('%Y-%m-%d') }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Discount</button>
+    </form>
+        <h3 class="my-4 text-center">Edit Discount</h3>
+    <table class="table table-striped" style="background-color: #c8d6e5">
+        <thead >
+            <tr>
+                <th>Edit</th>
+                <th>ID</th>
+                <th>Discount Name</th>
+                <th>Discount Code</th>
+                <th>Discount Percentage</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Created Date</th>
+                <th>Created By</th>
+                <th>Updated Date</th>
+                <th>Updated By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for discount in discounts %}
+            <tr>
+                <td><a href="{{ url_for('auth.edit_discount', discount_id=discount.id) }}">Edit</a></td>
+                <td>{{ discount.id }}</td>
+                <td>{{ discount.name }}</td>
+                <td>{{ discount.discount_code }}</td>
+                <td>{{ discount.percentage }}</td>
+                <td>{{ discount.start_date }}</td>
+                <td>{{ discount.end_date }}</td>
+                <td>{{ discount.created_date }}</td>
+                <td>{{ discount.created_by }}</td>
+                <td>{{ discount.updated_date }}</td>
+                <td>{{ discount.updated_by }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
