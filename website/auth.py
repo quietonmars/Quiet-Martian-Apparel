@@ -7,7 +7,7 @@ import sqlite3
 from . import db
 from datetime import datetime, timedelta, date
 import os
-from sqlalchemy import create_engine, text, desc, func
+from sqlalchemy import create_engine, text, desc, func, or_
 from collections import Counter, defaultdict
 import uuid
 
@@ -129,16 +129,80 @@ def profile():
     return render_template("customer/profile.html", user=user,dob=dob)
 
 
+@auth.route('/profile/edit/<int:customer_id>', methods=['GET', 'POST'])
+@login_required
+def edit_profile(customer_id):
+    customer = Customer.query.filter_by(id=customer_id).first()
+    if customer != current_user:
+        abort(403)
+
+    if request.method == 'POST':
+        name = request.form['name']
+        nrc = request.form['nrc']
+        nationality = request.form['nationality']
+        phone = request.form['phone']
+        dob_str = request.form['dob']
+        dob = datetime.strptime(dob_str, '%Y-%m-%d').date()
+        email = request.form['email']
+        add = request.form['add']
+        card = request.form['card']
+        usn = request.form['usn']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+
+
+        if password and confirm_password and password == confirm_password:
+            current_user.set_password(password)
+
+        customer.name = name
+        customer.nrc = nrc
+        customer.nationality = nationality
+        customer.phone_number = phone
+        customer.dob = dob
+        customer.email = email
+        customer.address = add
+        customer.card_no = card
+        customer.username = usn
+
+        check_email = Customer.query.filter_by(email=email).first()
+        username_check = Customer.query.filter_by(username=usn).first()
+
+        if username_check and username_check != customer:
+            flash('Username already exists', category='error')
+        elif check_email and check_email != customer:
+            flash('Email already exists', category='error')
+        elif len(email) < 4:
+            flash('Email must be greater than 3 characters', category='error')
+        elif len(name) < 2:
+            flash('Name must be greater than 1 character.', category='error')
+        elif password and (password != confirm_password):
+            flash('Passwords don\'t match.', category='error')
+        elif password and (len(password) < 7):
+            flash('Password must be at least 7 characters', category='error')
+        else:
+            if password:
+                password = generate_password_hash(password, method='sha256')
+                current_user.password = password
+            db.session.commit()
+            flash('Your profile has been updated.', 'success')
+            return redirect(url_for('auth.profile'))
+
+    dob_str = customer.dob.strftime('%Y-%m-%d')
+    return render_template("customer/edit_profile.html", customer=customer, dob=dob_str, user=current_user)
+
+
 @auth.route('/product-details/<int:id>', methods=['GET', 'POST'])
 def product_details(id):
     product = Product.query.filter_by(id=id).first()
     # products = p
     colors = Color.query.join(product_color).filter(product_color.c.product_id == id).all()
     price = product.price
-    if product.discount:
+    if product.discount is not None:
         discount_percentage = product.discount.percentage
         discount_price = price * (100 - discount_percentage) / 100
         price = discount_price
+    else:
+        discount_percentage = 0
 
     if request.method == 'POST':
         color_id = request.form['color']
@@ -259,10 +323,21 @@ def payment():
 @login_required
 def order_history():
     customer_id = current_user.id
-    orders = Order.query.filter_by(customer_id=customer_id, order_status='paid').all()
+    orders = Order.query.filter_by(customer_id=customer_id) \
+        .filter(or_(Order.order_status == 'paid', Order.order_status == 'delivered')) \
+        .all()
     total = sum(order.order_total for order in orders)
     print(f"Number of orders: {len(orders)}")
     return render_template("customer/order_history.html", orders=orders, total=total, user=current_user)
+
+
+@auth.route('/order-details/<int:order_id>')
+@login_required
+def order_details(order_id):
+    order = Order.query.get(order_id)
+    if not order or order.customer_id != current_user.id:
+        abort(404)
+    return render_template("customer/order_details.html", order=order, user=current_user)
 
 
 @auth.route('/about-us')
@@ -574,7 +649,10 @@ def edit_product(product_id):
         product.stock = request.form['stock']
         product.stock = request.form['brand']
         product.category_id = request.form['cat']
-        product.discount_id = request.form['discount']
+        discount = request.form.get('discount')
+        if not discount:
+            discount = 0
+        product.discount_id = discount
         product.price = request.form['price']
         colors = request.form.getlist('colors[]')
         colors_str = ','.join(colors)
@@ -825,7 +903,7 @@ def approve_reject_staff(id, status):
 @auth.route('/about_us/edit', methods=['GET', 'POST'])
 @login_required
 def edit_aboutus():
-    about_us = AboutUs.query.first()
+    about_us = AboutUs.query.order_by(AboutUs.updated_date.desc()).first()
 
     if request.method == 'POST':
         title = request.form['title']
@@ -834,18 +912,21 @@ def edit_aboutus():
         image = request.files['image']
         uploaded_file = ""
         if 'image' not in request.files:
-            flash('No image file')
-            return redirect(request.url)
 
-        if image.filename == '':
-            print('no image selected')
+            imagefile = about_us.image  # use the old image
         else:
-            filename = secure_filename(image.filename)
-            filename = filename.replace(' ', '_')
-            image.save(os.path.join("website/static/uploads/", filename))
-            uploaded_file = filename
-            flash('Image Uploaded')
-            imagefile = uploaded_file
+            image = request.files['image']
+            if image.filename == '':
+
+                imagefile = about_us.image  # use the old image
+            else:
+
+                filename = secure_filename(image.filename)
+                filename = filename.replace(' ', '_')
+                image.save(os.path.join("website/static/uploads/", filename))
+                uploaded_file = filename
+                flash('Image Uploaded')
+                imagefile = uploaded_file
 
         new_aboutus = AboutUs(staff_id=current_user.id, title=title, description=description, image=imagefile, created_date=datetime.now(), created_by=current_user.id, updated_date=datetime.now(), updated_by=current_user.id)
         db.session.add(new_aboutus)

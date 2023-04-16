@@ -8,7 +8,9 @@
 {% block main %}
 <link rel="stylesheet" href="static/payment.css">
     <h1>Order History</h1>
+
     {% if orders %}
+        <h4>Shipping Address: {{ orders[0].customer.address }}</h4>
         <table class="history">
             <thead>
                 <tr>
@@ -20,9 +22,10 @@
                 </tr>
             </thead>
             <tbody>
+
                 {% for order in orders %}
                     <tr>
-                        <td>{{ order.product.title }}</td>
+                        <td><a href="{{ url_for('auth.order_details', order_id=order.id) }}">{{ order.product.title }}</a></td>
                         <td>{{ order.quantity }}</td>
                         <td>{{ order.price }} $</td>
                         <td>{{ order.order_status }}</td>
@@ -33,7 +36,7 @@
             <tfoot>
                 <tr>
                     <td colspan="4">Total:</td>
-                    <td>{{ total }} $</td>
+                    <td>{{ '%.2f' % total }} $</td>
                 </tr>
             </tfoot>
         </table>

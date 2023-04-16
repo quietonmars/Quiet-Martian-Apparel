@@ -1,0 +1,54 @@
+{% extends "customer/layout.html" %}
+{% block title %} Order Details {% endblock %}
+
+{% block navbar %}
+    {% include 'customer/base.html' %}
+{% endblock %}
+
+{% block main %}
+<link rel="stylesheet" href="/static/payment.css">
+    <h1>Order Details</h1>
+
+    <table class="history">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ order.product.title }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.price }} $</td>
+                <td>{{ order.order_total }} $</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">Color:</td>
+                <td>{{ order.color }}</td>
+            </tr>
+            <tr>
+                <td colspan="3">Order Total:</td>
+                <td>{{ order.order_total }} $</td>
+            </tr>
+            <tr>
+                <td colspan="3">Order Status:</td>
+                <td>
+                    {% if order.order_status == "paid" %}
+                    paid (pending delivery)
+                    {% else %}
+                    {{ order.order_status }}
+                    {% endif %}
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+{% endblock %}
+
+{% block footer %}
+    {% include 'customer/footer.html' %}
+{% endblock %}

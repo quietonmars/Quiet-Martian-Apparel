@@ -15,9 +15,12 @@
   </div>
   <div class="form-group">
     <label for="description">Description:</label>
-    <textarea class="form-control" id="description" name="description">{{ about_us.description }}</textarea>
+    <textarea class="form-control" id="description" name="description" rows="5">{{ about_us.description }}</textarea>
   </div>
   <div class="form-group">
+    <a href="/static/uploads/{{about_us.image}}">
+                    <img src="/static/uploads/{{about_us.image}}" alt="About Us Image" class="img-thumbnail" style="max-width: 70px; max-height: 70px;">
+                  </a>
     <label for="image">Image:</label>
     <input type="file" class="form-control-file" id="image" name="image">
   </div>

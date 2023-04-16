@@ -1,6 +1,8 @@
 from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
+from werkzeug.security import generate_password_hash
+
 
 
 class Customer(db.Model, UserMixin):
@@ -19,6 +21,10 @@ class Customer(db.Model, UserMixin):
 
     payments = db.relationship('Payment')
     orders = db.relationship('Order')
+
+    def set_password(self, password):
+        """Set the password hash for the customer."""
+        self.password_hash = generate_password_hash(password)
 
 
 class Order(db.Model, UserMixin):
