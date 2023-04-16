@@ -9,32 +9,15 @@
 {% include 'staff/base2.html' %}
 
 {% block main %}
+<head>
+<link rel="stylesheet" href="static/style.css">
+<style>
+
+</style>
+</head>
+<body>
 <div class="container">
     <h3 class="my-4 text-center">Edit Discount</h3>
-    <form method="POST">
-        <div class="form-group">
-            <label for="name">Discount Name</label>
-            <input type="text" class="form-control" id="name" name="name" value="{{ discount.name }}" required>
-        </div>
-        <div class="form-group">
-            <label for="code">Discount Code</label>
-            <input type="text" class="form-control" id="code" name="code" value="{{ discount.discount_code }}" required>
-        </div>
-        <div class="form-group">
-            <label for="percentage">Discount Percentage</label>
-            <input type="number" class="form-control" id="percentage" name="percentage" value="{{ discount.percentage }}" required>
-        </div>
-        <div class="form-group">
-            <label for="start_date">Discount Start Date</label>
-            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ discount.start_date.strftime('%Y-%m-%d') }}" required>
-        </div>
-        <div class="form-group">
-            <label for="end_date">Discount End Date</label>
-            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ discount.end_date.strftime('%Y-%m-%d') }}" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Update Discount</button>
-    </form>
-        <h3 class="my-4 text-center">Edit Discount</h3>
     <table class="table table-striped" style="background-color: #c8d6e5">
         <thead >
             <tr>
@@ -69,5 +52,40 @@
             {% endfor %}
         </tbody>
     </table>
+    <form method="POST" id="editDiscountForm">
+        <div class="form-group">
+            <label for="name">Discount Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ discount.name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="code">Discount Code</label>
+            <input type="text" class="form-control" id="code" name="code" value="{{ discount.discount_code }}" required>
+        </div>
+        <div class="form-group">
+            <label for="percentage">Discount Percentage</label>
+            <input type="number" class="form-control" id="percentage" name="percentage" value="{{ discount.percentage }}" required>
+        </div>
+        <div class="form-group">
+            <label for="start_date">Discount Start Date</label>
+            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ discount.start_date.strftime('%Y-%m-%d') }}" required>
+        </div>
+        <div class="form-group">
+            <label for="end_date">Discount End Date</label>
+            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ discount.end_date.strftime('%Y-%m-%d') }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Discount</button>
+    </form>
+
 </div>
+</body>
+
+<script>
+    window.onload = function() {
+        document.getElementById('editDiscountForm').scrollIntoView({
+            behavior: 'smooth'
+        });
+    }
+</script>
+
+
 {% endblock %}

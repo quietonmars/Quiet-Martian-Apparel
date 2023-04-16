@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, make_response
+from flask import Blueprint, render_template, request, flash, redirect, url_for, make_response, abort
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager, UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -442,7 +442,19 @@ def sales_dashboard():
 @auth.route('/order-report', methods=['GET', 'POST'])
 def order_report():
     orders = Order.query.filter_by(order_status='paid').all()
-    return render_template("staff/order_report.html", orders=orders, user=current_user)
+    d_orders = Order.query.filter_by(order_status='delivered').all()
+    return render_template("staff/order_report.html",d_orders=d_orders, orders=orders, user=current_user)
+
+
+@auth.route('/order-delivered', methods=['POST'])
+def order_delivered():
+    order_id = request.form['order_id']
+    order = Order.query.get(order_id)
+    if order:
+        order.order_status = 'delivered'
+        flash('Order is now Successfully Delivered', category='success')
+        db.session.commit()
+    return redirect(url_for('auth.order_report'))
 
 
 def allowed_file(filename):
@@ -554,6 +566,8 @@ def edit_product(product_id):
     b = Brand.query.all()
     brands = b
 
+    products = Product.query.all()
+
     if request.method == 'POST':
         product.title = request.form['name']
         product.description = request.form['desc']
@@ -572,6 +586,31 @@ def edit_product(product_id):
             )
             db.session.execute(new_color)
             db.session.commit()
+
+        if 'image1' in request.files:
+            image1 = request.files['image1']
+            if image1.filename != '':
+                filename = secure_filename(image1.filename)
+                filename = filename.replace(' ', '_')
+                image1.save(os.path.join("website/static/uploads/", filename))
+                product.image_1 = filename
+
+        if 'image2' in request.files:
+            image2 = request.files['image2']
+            if image2.filename != '':
+                filename = secure_filename(image2.filename)
+                filename = filename.replace(' ', '_')
+                image2.save(os.path.join("website/static/uploads/", filename))
+                product.image_2 = filename
+
+        if 'image3' in request.files:
+            image3 = request.files['image3']
+            if image3.filename != '':
+                filename = secure_filename(image3.filename)
+                filename = filename.replace(' ', '_')
+                image3.save(os.path.join("website/static/uploads/", filename))
+                product.image_3 = filename
+
         db.session.commit()
 
         flash('Product updated successfully', 'success')
@@ -581,7 +620,7 @@ def edit_product(product_id):
     colors = Color.query.all()
     discounts = Discount.query.all()
 
-    return render_template("staff/edit_product.html",datetime=datetime, brands=brands, product=product, categories=categories, colors=colors, discounts=discounts, user=current_user)
+    return render_template("staff/edit_product.html",datetime=datetime, products=products, brands=brands, product=product, categories=categories, colors=colors, discounts=discounts, user=current_user)
 
 
 @auth.route('/manage-brands', methods=['GET', 'POST'])

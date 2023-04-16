@@ -17,7 +17,67 @@
 </head>
 <body>
     <div class="container">
-        <h3 class="my-4 text-center">Edit Product</h3>
+        <h3 class="my-4 text-center">Manage Products</h3>
+
+    <table class="table table-striped" style="background-color: #c8d6e5">
+        <thead>
+            <tr>
+                <th>Edit</th>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Brand</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Stock</th>
+                <th>Discount</th>
+                <th>Price</th>
+                <th>Color</th>
+                <th>Image 1</th>
+                <th>Image 2</th>
+                <th>Image 3</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>Edit</td>
+                <td>{{ product.id }}</td>
+                <td>{{ product.title }}</td>
+                <td>{{ product.brand.name }}</td>
+                <td>{{ product.category.name }}</td>
+                <td>{{ product.description }}</td>
+                <td>{{ product.stock }}</td>
+                <td>{{ product.discount_id }}</td>
+                <td>{{ product.price }}</td>
+                <td>
+                    {% for color in product.colors %}
+                    {{ color.name }}
+                    {% endfor %}
+                </td>
+                <td>
+                  <a href="/static/uploads/{{product.image_1}}">
+                    <img src="/static/uploads/{{product.image_1}}" alt="Product Image" class="img-thumbnail" style="max-width: 70px; max-height: 70px;">
+                  </a>
+                </td>
+                <td>
+                  <a href="/static/uploads/{{product.image_2}}">
+                    <img src="/static/uploads/{{product.image_2}}" alt="Product Image" class="img-thumbnail" style="max-width: 70px; max-height: 70px;">
+                  </a>
+                </td>
+                <td>
+                  <a href="/static/uploads/{{product.image_3}}">
+                    <img src="/static/uploads/{{product.image_3}}" alt="Product Image" class="img-thumbnail" style="max-width: 70px; max-height: 70px;">
+                  </a>
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+        <br>
+        <h3 class="my-4 text-center"id="editProductForm">Edit Product</h3>
+
         <form method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label>Product Name</label>
@@ -81,8 +141,42 @@
                     </div>
                 {% endfor %}
             </div>
+
+            <div class="form-group">
+               <label>Product Image 1</label>
+                {% if product.image_1 %}
+                    <img src="{{ url_for('static', filename='uploads/' + product.image_1) }}" alt="Product Image 1" height="30">
+                {% endif %}
+               <input type="file" class="form-control-file" id="image1" name="image1">
+            </div>
+
+            <div class="form-group">
+               <label>Product Image 2</label>
+                {% if product.image_2 %}
+                    <img src="{{ url_for('static', filename='uploads/' + product.image_2) }}" alt="Product Image 2" height="30">
+                {% endif %}
+               <input type="file" class="form-control-file" id="image2" name="image2">
+            </div>
+
+            <div class="form-group">
+               <label>Product Image 3</label>
+                {% if product.image_3 %}
+                    <img src="{{ url_for('static', filename='uploads/' + product.image_3) }}" alt="Product Image 3" height="30">
+                {% endif %}
+               <input type="file" class="form-control-file" id="image3" name="image3">
+            </div>
+
             <button type="submit" class="btn btn-primary mb-3">Save Changes</button>
         </form>
     </div>
 </body>
+
+<script>
+    window.onload = function() {
+        document.getElementById('editProductForm').scrollIntoView({
+            behavior: 'smooth'
+        });
+    }
+</script>
+
 {% endblock %}

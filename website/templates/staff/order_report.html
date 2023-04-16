@@ -8,7 +8,48 @@
 {% block main %}
 <link rel="stylesheet" href="static/payment.css">
     <h1>Order Report</h1>
+<br>
+<h3>To Deliver</h3>
         <table class="history">
+            <thead>
+                <tr>
+                    <th>&nbsp;&nbsp;Product Name</th>
+                    <th>Customer Name</th>
+                    <th>Product Color</th>
+                    <th>Shipping Address</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>To Deliver</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.product.title }}</td>
+                        <td>{{ order.customer.name }}</td>
+                        <td>{{ order.color}}</td>
+                        <td>{{ order.customer.address }}</td>
+                        <td>{{ order.quantity }}</td>
+                        <td>{{ order.price }} $</td>
+                        <td>{{ order.order_total }} $</td>
+                        <td>{{ order.order_status }}</td>
+                        <td>
+                            {% if order.order_status == 'paid' %}
+                            <form method="POST" action="{{ url_for('auth.order_delivered') }}">
+                                <input type="hidden" name="order_id" value="{{ order.id }}">
+                                <button type="submit" class="btn btn-primary">Delivered</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+<br>
+<h3>Delivered Orders</h3>
+<table class="history">
             <thead>
                 <tr>
                     <th>&nbsp;&nbsp;Product Name</th>
@@ -22,7 +63,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for order in orders %}
+                {% for order in d_orders %}
                     <tr>
                         <td>{{ order.product.title }}</td>
                         <td>{{ order.customer.name }}</td>
