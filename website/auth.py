@@ -323,9 +323,7 @@ def payment():
 @login_required
 def order_history():
     customer_id = current_user.id
-    orders = Order.query.filter_by(customer_id=customer_id) \
-        .filter(or_(Order.order_status == 'paid', Order.order_status == 'delivered')) \
-        .all()
+    orders = Order.query.filter(Order.order_status != 'cart', Order.customer_id == customer_id).all()
     total = sum(order.order_total for order in orders)
     print(f"Number of orders: {len(orders)}")
     return render_template("customer/order_history.html", orders=orders, total=total, user=current_user)
@@ -517,8 +515,20 @@ def sales_dashboard():
 @auth.route('/order-report', methods=['GET', 'POST'])
 def order_report():
     orders = Order.query.filter_by(order_status='paid').all()
+    tod_orders = Order.query.filter_by(order_status='delivering').all()
     d_orders = Order.query.filter_by(order_status='delivered').all()
-    return render_template("staff/order_report.html",d_orders=d_orders, orders=orders, user=current_user)
+    return render_template("staff/order_report.html", tod_orders=tod_orders, d_orders=d_orders, orders=orders, user=current_user)
+
+
+@auth.route('/order-delivering', methods=['POST'])
+def order_delivering():
+    order_id = request.form['order_id']
+    order = Order.query.get(order_id)
+    if order:
+        order.order_status = 'delivering'
+        flash('Order is now Successfully Delivered', category='success')
+        db.session.commit()
+    return redirect(url_for('auth.order_report'))
 
 
 @auth.route('/order-delivered', methods=['POST'])

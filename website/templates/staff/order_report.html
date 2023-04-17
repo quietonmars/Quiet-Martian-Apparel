@@ -9,7 +9,8 @@
 <link rel="stylesheet" href="static/payment.css">
     <h1>Order Report</h1>
 <br>
-<h3>To Deliver</h3>
+
+<h3>Pending Delivery</h3>
         <table class="history">
             <thead>
                 <tr>
@@ -25,6 +26,7 @@
                 </tr>
             </thead>
             <tbody>
+            {% if orders %}
                 {% for order in orders %}
                     <tr>
                         <td>{{ order.product.title }}</td>
@@ -37,6 +39,50 @@
                         <td>{{ order.order_status }}</td>
                         <td>
                             {% if order.order_status == 'paid' %}
+                            <form method="POST" action="{{ url_for('auth.order_delivering') }}">
+                                <input type="hidden" name="order_id" value="{{ order.id }}">
+                                <button type="submit" class="btn btn-primary">Deliver Order</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+            <td colspan="9" align="center">no orders pending delivery</td>
+            {% endif %}
+            </tbody>
+        </table>
+<br>
+
+<h3>Delivering</h3>
+        <table class="history">
+            <thead>
+                <tr>
+                    <th>&nbsp;&nbsp;Product Name</th>
+                    <th>Customer Name</th>
+                    <th>Product Color</th>
+                    <th>Shipping Address</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>To Deliver</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if tod_orders %}
+                {% for order in tod_orders %}
+                    <tr>
+                        <td>{{ order.product.title }}</td>
+                        <td>{{ order.customer.name }}</td>
+                        <td>{{ order.color}}</td>
+                        <td>{{ order.customer.address }}</td>
+                        <td>{{ order.quantity }}</td>
+                        <td>{{ order.price }} $</td>
+                        <td>{{ order.order_total }} $</td>
+                        <td>{{ order.order_status }}</td>
+                        <td>
+                            {% if order.order_status == 'delivering' %}
                             <form method="POST" action="{{ url_for('auth.order_delivered') }}">
                                 <input type="hidden" name="order_id" value="{{ order.id }}">
                                 <button type="submit" class="btn btn-primary">Delivered</button>
@@ -45,6 +91,9 @@
                         </td>
                     </tr>
                 {% endfor %}
+            {% else %}
+            <td colspan="9" align="center">no orders currently being delivered</td>
+            {% endif %}
             </tbody>
         </table>
 <br>
@@ -63,6 +112,7 @@
                 </tr>
             </thead>
             <tbody>
+            {% if d_orders %}
                 {% for order in d_orders %}
                     <tr>
                         <td>{{ order.product.title }}</td>
@@ -75,6 +125,9 @@
                         <td>{{ order.order_status }}</td>
                     </tr>
                 {% endfor %}
+            {% else %}
+            <td colspan="9" align="center">no orders delivered to the customer yet</td>
+            {% endif %}
             </tbody>
         </table>
 {% endblock %}

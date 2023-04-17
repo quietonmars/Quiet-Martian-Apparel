@@ -40,8 +40,10 @@
                 <td>
                     {% if order.order_status == "paid" %}
                     paid (pending delivery)
+                    {% elif order.order_status == "delivering"  %}
+                    your order is being delivered
                     {% else %}
-                    {{ order.order_status }}
+                    your order is now {{ order.order_status }}
                     {% endif %}
                 </td>
             </tr>
