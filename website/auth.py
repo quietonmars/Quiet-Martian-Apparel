@@ -13,17 +13,19 @@ import uuid
 
 from .models import Customer, Staff, Category, Brand, Product, Color, Discount, product_color, Order, Payment, AboutUs
 
+import smtplib
+from email.message import EmailMessage
+
 conn = sqlite3.connect('././instance/database.db', check_same_thread=False)
 conn.execute("PRAGMA busy_timeout = 5000")
 SQLALCHEMY_ENGINE_OPTIONS = {"pool_timeout": 30}
 
-auth = Blueprint('auth',__name__)
+auth = Blueprint('auth', __name__)
 
 conn.row_factory = sqlite3.Row
 
 engine = create_engine('sqlite:///database.db', connect_args={'timeout': 60})
 conn = engine.connect()
-
 
 login_manager = LoginManager()
 
@@ -42,7 +44,6 @@ def load_user(user_id):
 
     # If the user is not found or is not active, return None
     return None
-
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -99,14 +100,30 @@ def signup():
             flash('Password must be at least 7 characters', category='error')
         else:
             new_customer = Customer(name=name, nric=nric, nationality=nationality, phone_number=phone_number, dob=dob,
-                                    email=email, address=address, card_no=card_no, username=username, password=generate_password_hash(password, method='sha256'))
+                                    email=email, address=address, card_no=card_no, username=username,
+                                    password=generate_password_hash(password, method='sha256'))
 
             db.session.add(new_customer)
             db.session.commit()
+            to = email
+            subject = "Your account has been successfully created"
+            body = "Hi " + name + ", " + "\n\n\n" + "We are pleased to inform you that your account has been" \
+                                                    " successfully created in Quiet Martian Apparel" + "\n\n" \
+                                                    "You can now login using your username." + "\n\nUsername :" \
+                   + username + "\n\n" + "With your new account, you can enjoy the" \
+                                         "following benefits: \n-Faster checkout \n-View and track your " \
+                                         "orders" \
+                                         "\n-Save your favorite products to your wishlist \n-Make Save and" \
+                                         "secure payments"+ "Thank you for shopping with us.\n\nBest regards,\nQuiet " \
+                                                            "Martian Apparel "
+            print(to)
+            print(subject)
+            print(body)
+            send_email(to, subject, body)
             flash('Account Registered Successfully!', category='success')
             return redirect(url_for('auth.login'))
 
-    return render_template("customer/signup.html",user=current_user)
+    return render_template("customer/signup.html", user=current_user)
 
 
 @auth.route('/logout')
@@ -126,7 +143,7 @@ def profile():
         user = current_user
 
     dob = user.dob.strftime('%Y-%m-%d')
-    return render_template("customer/profile.html", user=user,dob=dob)
+    return render_template("customer/profile.html", user=user, dob=dob)
 
 
 @auth.route('/profile/edit/<int:customer_id>', methods=['GET', 'POST'])
@@ -149,7 +166,6 @@ def edit_profile(customer_id):
         usn = request.form['usn']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
-
 
         if password and confirm_password and password == confirm_password:
             current_user.set_password(password)
@@ -215,7 +231,8 @@ def product_details(id):
 
         return redirect(url_for('auth.cart'))
 
-    return render_template("customer/product_details.html", datetime=datetime, product=product, price=price, colors=colors, user=current_user)
+    return render_template("customer/product_details.html", datetime=datetime, product=product, price=price,
+                           colors=colors, user=current_user)
 
 
 @auth.route('/add-to-cart', methods=['POST'])
@@ -270,7 +287,8 @@ def cart():
     else:
         credit_info = ""
 
-    return render_template("customer/cart.html", datetime=datetime, credit_info=credit_info, orders=orders, total=total, user=current_user)
+    return render_template("customer/cart.html", datetime=datetime, credit_info=credit_info, orders=orders, total=total,
+                           user=current_user)
 
 
 @auth.route('/clear_cart', methods=['POST'])
@@ -313,6 +331,16 @@ def payment():
             )
             db.session.add(payment)
         db.session.commit()
+        to = current_user.email
+        paid_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        subject = "Quiet Martian Apparel Order Confirmation for " + current_user.name
+        body = "Hi " + current_user.name + ",\n\n" + "Your order for " + order.product.title + " has been paid using " + payment_method + ".\n\n" + "Order Date: " + paid_date + "\n\n" + "Price: " + str(
+            order.price) + "$" + "\n\n" + "Quantity: " + str(order.quantity) + "\n\n" + "Total Amount: " + str(
+            order.order_total) + "$" + "\n\n\n\n" + "Thank you for shopping with us.\n\nBest regards,\nQuiet Martian Apparel"
+        print(to)
+        print(subject)
+        print(body)
+        send_email(to, subject, body)
         flash('Order paid successfully', category="success")
 
         return redirect(url_for('auth.order_history'))
@@ -419,7 +447,17 @@ def new_staff():
                           username=username, password=hashed_password)
             db.session.add(staff)
             db.session.commit()
-            flash('Account Registered Successfully! Please wait for account to be reviewed and approved.', category='success')
+            to = email
+            subject = "Account has been Created Successfully"
+            body = "Dear " + name + ",\n\n\n" + "Your account has been successfully created and will be reviewed by " \
+                                                "our team." \
+                                                "We will let you know when the account is updated." + "\nUsername: " + username + "\n\n\nBest regards,\nQuiet Martian Apparel"
+            print(to)
+            print(subject)
+            print(body)
+            send_email(to, subject, body)
+            flash('Account Registered Successfully! Please wait for account to be reviewed and approved.',
+                  category='success')
             return redirect(url_for('auth.staff_login'))
 
     return render_template("staff/new_staff.html", user=current_user)
@@ -428,7 +466,6 @@ def new_staff():
 @auth.route('/sales-dashboard', methods=['GET', 'POST'])
 @login_required
 def sales_dashboard():
-
     # get all paid orders
     orders = Order.query.filter_by(order_status='paid').all()
     if not orders:
@@ -509,7 +546,9 @@ def sales_dashboard():
         cc = (f"{order_count}")
     almost_out_of_stock = Product.query.filter(Product.stock < 5).all()
 
-    return render_template("staff/sales_dashboard.html", cc=cc,msc=msc, count_b=count_b, count_c=count_c, msb=msb, most_sold_color=most_sold_color, orders=orders, user=current_user, almost_out_of_stock=almost_out_of_stock)
+    return render_template("staff/sales_dashboard.html", cc=cc, msc=msc, count_b=count_b, count_c=count_c, msb=msb,
+                           most_sold_color=most_sold_color, orders=orders, user=current_user,
+                           almost_out_of_stock=almost_out_of_stock)
 
 
 @auth.route('/order-report', methods=['GET', 'POST'])
@@ -517,7 +556,8 @@ def order_report():
     orders = Order.query.filter_by(order_status='paid').all()
     tod_orders = Order.query.filter_by(order_status='delivering').all()
     d_orders = Order.query.filter_by(order_status='delivered').all()
-    return render_template("staff/order_report.html", tod_orders=tod_orders, d_orders=d_orders, orders=orders, user=current_user)
+    return render_template("staff/order_report.html", tod_orders=tod_orders, d_orders=d_orders, orders=orders,
+                           user=current_user)
 
 
 @auth.route('/order-delivering', methods=['POST'])
@@ -526,8 +566,18 @@ def order_delivering():
     order = Order.query.get(order_id)
     if order:
         order.order_status = 'delivering'
-        flash('Order is now Successfully Delivered', category='success')
+        flash('Order is now Successfully added to delivery', category='success')
         db.session.commit()
+        to = order.customer.email
+        subject = "Your Order for " + order.product.title + " is now added to Delivery"
+        delivering_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        body = "Hi " + order.customer.name + ",\n\n" + "Your order for " + order.product.title + " have been added to delivery. And estimated to arrive within one week." + "\n\n" + "Delivery Address: " + order.customer.address + "\n\n" + "Delivery Date: " + delivering_date + "\n\n" + "Price: " + str(
+            order.price) + "$" + "\n\n" + "Quantity: " + str(order.quantity) + "\n\n" + "Total Amount: " + str(
+            order.order_total) + "$" + "\n\n\n\n" + "Thank you for shopping with us.\n\nBest regards,\nQuiet Martian Apparel"
+        print(to)
+        print(subject)
+        print(body)
+        send_email(to, subject, body)
     return redirect(url_for('auth.order_report'))
 
 
@@ -539,6 +589,16 @@ def order_delivered():
         order.order_status = 'delivered'
         flash('Order is now Successfully Delivered', category='success')
         db.session.commit()
+        to = order.customer.email
+        subject = "Your Order for " + order.product.title + " is now successfully delivered"
+        delivered_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        body = "Hi " + order.customer.name + ",\n\n" + "We are delighted to inform you that your order for the " + order.product.title + " has been successfully delivered to your specified address. We hope that you are satisfied with your purchase." + "\n\n" + "Delivery Address: " + order.customer.address + "\n\n" + "Delivery Date: " + delivered_date + "\n\n" + "Price: " + str(
+            order.price) + "$" + "\n\n" + "Quantity: " + str(order.quantity) + "\n\n" + "Total Amount: " + str(
+            order.order_total) + "$" + "\n\n\n\n" + "Thank you for shopping with us.\n\nBest regards,\nQuiet Martian Apparel"
+        print(to)
+        print(subject)
+        print(body)
+        send_email(to, subject, body)
     return redirect(url_for('auth.order_report'))
 
 
@@ -607,7 +667,7 @@ def manage_products():
             image1.save(os.path.join("website/static/uploads/", filename))
             uploaded_file = filename
             flash('Image 1 Uploaded')
-            imagefile1=uploaded_file
+            imagefile1 = uploaded_file
 
             filename2 = secure_filename(image2.filename)
             filename2 = filename2.replace(' ', '_')
@@ -624,7 +684,9 @@ def manage_products():
             imagefile3 = uploaded_file3
 
         new_product = Product(title=name, description=desc, stock=stock, brand_id=brand_id, category_id=cat_id,
-                              discount_id=discount_id, price=price, color_id=colors_str, image_1=imagefile1, image_2=imagefile2, image_3=imagefile3, created_by_id=current_user.name, updated_by_id=current_user.name)
+                              discount_id=discount_id, price=price, color_id=colors_str, image_1=imagefile1,
+                              image_2=imagefile2, image_3=imagefile3, created_by_id=current_user.name,
+                              updated_by_id=current_user.name)
 
         db.session.add(new_product)
         db.session.commit()
@@ -641,7 +703,8 @@ def manage_products():
 
         return redirect(url_for('auth.manage_products'))
 
-    return render_template("staff/products.html", datetime=datetime, categories=categories, brands=brands, colors=colors, discounts=discounts, products=products, user=current_user)
+    return render_template("staff/products.html", datetime=datetime, categories=categories, brands=brands,
+                           colors=colors, discounts=discounts, products=products, user=current_user)
 
 
 @auth.route('/manage-products/edit/<int:product_id>', methods=['GET', 'POST'])
@@ -708,7 +771,9 @@ def edit_product(product_id):
     colors = Color.query.all()
     discounts = Discount.query.all()
 
-    return render_template("staff/edit_product.html",datetime=datetime, products=products, brands=brands, product=product, categories=categories, colors=colors, discounts=discounts, user=current_user)
+    return render_template("staff/edit_product.html", datetime=datetime, products=products, brands=brands,
+                           product=product, categories=categories, colors=colors, discounts=discounts,
+                           user=current_user)
 
 
 @auth.route('/manage-brands', methods=['GET', 'POST'])
@@ -718,12 +783,12 @@ def manage_brands():
     brands = bran
     if request.method == 'POST':
         Brand_name = request.form.get('newbrand')
-        new_brand = Brand(name=Brand_name,created_by=current_user.name, updated_by=current_user.name)
+        new_brand = Brand(name=Brand_name, created_by=current_user.name, updated_by=current_user.name)
         db.session.add(new_brand)
         db.session.commit()
         flash('New Brand Added Successfully', category='success')
         return redirect(url_for('auth.manage_brands', user=current_user))
-    return render_template("staff/brands.html",brands=brands, user=current_user)
+    return render_template("staff/brands.html", brands=brands, user=current_user)
 
 
 @auth.route('/manage-brands/edit/<int:brand_id>', methods=['GET', 'POST'])
@@ -749,7 +814,7 @@ def manage_category():
 
     if request.method == 'POST':
         Category_name = request.form.get('newcat')
-        new_category = Category(name=Category_name,created_by=current_user.name, updated_by=current_user.name)
+        new_category = Category(name=Category_name, created_by=current_user.name, updated_by=current_user.name)
         db.session.add(new_category)
         db.session.commit()
         flash('New Category Added Successfully', category='success')
@@ -772,7 +837,8 @@ def edit_category(category_id, category_name):
         flash('Category Updated Successfully', category='success')
         return redirect(url_for('auth.manage_category', user=current_user))
 
-    return render_template("staff/edit_category.html", categories=categories, category=category, category_name=category.name, user=current_user)
+    return render_template("staff/edit_category.html", categories=categories, category=category,
+                           category_name=category.name, user=current_user)
 
 
 @auth.route('/manage-colors', methods=['GET', 'POST'])
@@ -784,13 +850,13 @@ def manage_colors():
         color_name = request.form.get('newcolor')
         color_code = request.form.get('color_code')
 
-        new_color = Color(name=color_name,color_code=color_code)
+        new_color = Color(name=color_name, color_code=color_code)
         db.session.add(new_color)
         db.session.commit()
         flash('New Color Added Successfully', category='success')
         return redirect(url_for('auth.manage_colors', user=current_user))
 
-    return render_template("staff/manage_colors.html", colors= colors, user=current_user)
+    return render_template("staff/manage_colors.html", colors=colors, user=current_user)
 
 
 @auth.route('/edit-colors/<int:color_id>', methods=['GET', 'POST'])
@@ -806,7 +872,7 @@ def edit_colors(color_id):
         flash('Color Updated Successfully', category='success')
         return redirect(url_for('auth.manage_colors', user=current_user))
 
-    return render_template("staff/edit_color.html", color=color, colors= colors, user=current_user)
+    return render_template("staff/edit_color.html", color=color, colors=colors, user=current_user)
 
 
 @auth.route('/manage-discount', methods=['GET', 'POST'])
@@ -824,13 +890,15 @@ def manage_discount():
 
         d_sdate = datetime.strptime(discount_start_date, '%Y-%m-%d').date()
         d_edate = datetime.strptime(discount_end_date, '%Y-%m-%d').date()
-        new_discount = Discount(name=discount_name, discount_code=discount_code, percentage=discount_percentage, start_date=d_sdate,end_date=d_edate,created_by=current_user.name, updated_by=current_user.name)
+        new_discount = Discount(name=discount_name, discount_code=discount_code, percentage=discount_percentage,
+                                start_date=d_sdate, end_date=d_edate, created_by=current_user.name,
+                                updated_by=current_user.name)
         db.session.add(new_discount)
         db.session.commit()
         flash('New Discount Added Successfully', category='success')
         return redirect(url_for('auth.manage_discount', user=current_user))
 
-    return render_template("staff/discount.html", discounts=discounts,user=current_user)
+    return render_template("staff/discount.html", discounts=discounts, user=current_user)
 
 
 @auth.route('/manage-discount/edit/<int:discount_id>', methods=['GET', 'POST'])
@@ -886,6 +954,16 @@ def approve_reject_staff(id, status):
     if request.args.get('confirm') == 'true':
         staff.status = status
         db.session.commit()
+        to = staff.email
+        subject = "Your Account has been " + status
+        body = "Dear " + staff.name + ", \n\n\n" + "Your account has been updated to " + status + \
+               ". \n\nIf your account has been approved, you can now login." + \
+               "\nIf your account has been deactivated without prior notice, Please contact us." + \
+               "\n\n Best Regards, \n Quiet Martian Staff Team"
+        print(to)
+        print(subject)
+        print(body)
+        send_email(to, subject, body)
 
         if status == 'activated':
             flash('Staff is approved', category='success')
@@ -897,7 +975,7 @@ def approve_reject_staff(id, status):
             flash('Staff account is activated', category='success')
         else:
             print('Change status canceled')
-            flash('Change Status Cancelled',category='success')
+            flash('Change Status Cancelled', category='success')
 
     return f"""
             <script>
@@ -938,10 +1016,29 @@ def edit_aboutus():
                 flash('Image Uploaded')
                 imagefile = uploaded_file
 
-        new_aboutus = AboutUs(staff_id=current_user.id, title=title, description=description, image=imagefile, created_date=datetime.now(), created_by=current_user.id, updated_date=datetime.now(), updated_by=current_user.id)
+        new_aboutus = AboutUs(staff_id=current_user.id, title=title, description=description, image=imagefile,
+                              created_date=datetime.now(), created_by=current_user.id, updated_date=datetime.now(),
+                              updated_by=current_user.id)
         db.session.add(new_aboutus)
         db.session.commit()
         flash('About Us page updated!', category='success')
         return redirect(url_for('auth.edit_aboutus'))
 
     return render_template('staff/edit_aboutus.html', about_us=about_us, user=current_user)
+
+
+def send_email(to, subject, body):
+    # Create a new email message
+    msg = EmailMessage()
+    msg.set_content(body)
+    msg['To'] = to
+    msg['Subject'] = subject
+    msg['From'] = 'yangster24dawhla@gmail.com'
+
+    # Connect to the SMTP server and send the message
+    with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
+        smtp.login('yangster24dawhla@gmail.com', 'kimungscuzlobuff')
+        smtp.send_message(msg)
