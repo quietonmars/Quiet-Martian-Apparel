@@ -13,10 +13,11 @@
 {% block main %}
     {% include 'customer/carousel.html' %}
 
-    <form action="{{ url_for('views.home') }}" method="GET" class="w-100 m-0" style="padding-right: 3%;" id="search-form">
+
+    <form action="{{ url_for('views.home') }}" method="GET" class="w-100 m-0" style="padding-right: 3%;">
         <div class="input-group-append rounded-left">
             <input type="search" class="form-control rounded-left form-control-md" autocomplete="off" style="float: left; border-radius: 0; width: 100%;" name="q" placeholder="What would you like...">
-            <button class="btn btn-success btn-md rounded-right" style="border-radius: 0;" type="submit" onclick="scrollToCatalog()">Search</button>
+            <button class="btn btn-success btn-md rounded-right" style="border-radius: 0;" type="submit">Search</button>
         </div>
     </form>
     <br>
@@ -31,9 +32,5 @@
 {% endblock %}
 
 {% block scripts %}
-    <script>
-        function scrollToCatalog() {
-            document.querySelector('#catalog').scrollIntoView({ behavior: 'smooth' });
-        }
-    </script>
+
 {% endblock %}
