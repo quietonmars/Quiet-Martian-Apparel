@@ -1,12 +1,16 @@
 # Quiet-Martian-Apparel
 # Quiet-Martian-Apparel
+To set up Quiet-Martian-Apparel website:
+
+Install Python 3 on your computer if it's not already installed.
+
+Clone the repository to your local machine.
+
+Open a terminal or command prompt and navigate to the directory where you have cloned the repository.
+
+Install the required packages by running the following command:
+
 To install the requirements.txt:
-
-Make sure you have Python 3 installed on your computer.
-
-Open a terminal or command prompt.
-
-Navigate to the directory where you have saved the requirements.txt file.
 
 Run the following command:
 
@@ -15,6 +19,7 @@ pip install -r requirements.txt
 or
 
 pip3 install -r requirements.txt
+
 
 Once the packages are installed, run the website
 
