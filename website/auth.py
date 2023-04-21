@@ -979,7 +979,7 @@ def approve_reject_staff(id, status):
 
     return f"""
             <script>
-                if ('{staff.status}' !== '{status}' && confirm('Are you sure you want to change the status of admin {staff.name} to {status}?')) {{
+                if ('{staff.status}' !== '{status}' && confirm('Are you sure you want to change the status of {staff.name} to {status}?')) {{
                     window.location = '{url_for('auth.approve_reject_staff', id=id, status=status, confirm='true')}';
                 }} else {{
                     window.location = '{url_for('auth.manage_staffs')}';
